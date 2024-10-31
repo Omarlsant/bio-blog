@@ -19,3 +19,9 @@ test('renders team member images with alt text', () => {
   expect(marielaImage).toBeInTheDocument();
 });
 
+test('renders CTA button with link to /contacto', () => {
+  render(<AboutUs />);
+  const ctaButton = screen.getByRole('link', { name: /Contáctanos/i });
+  expect(ctaButton).toBeInTheDocument();
+  expect(ctaButton).toHaveAttribute('href', '/contacto');
+});
