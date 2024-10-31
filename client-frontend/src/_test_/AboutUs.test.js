@@ -25,3 +25,16 @@ test('renders CTA button with link to /contacto', () => {
   expect(ctaButton).toBeInTheDocument();
   expect(ctaButton).toHaveAttribute('href', '/contacto');
 });
+
+test('renders key values of the company', () => {
+  render(<AboutUs />);
+  const values = [
+    'Sostenibilidad Alimentaria',
+    'Compromiso con la Comunidad',
+    'Reducción del Desperdicio de Alimentos',
+    'Consumo Consciente'
+  ];
+  values.forEach(value => {
+    expect(screen.getByText(new RegExp(value, 'i'))).toBeInTheDocument();
+  });
+});
