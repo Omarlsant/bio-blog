@@ -1,37 +1,70 @@
-// Blog.jsx
 import React, { useState, useEffect } from 'react';
-import { getPosts, deletePost } from '../services/services'; 
-import ButtonIcon from '../components/ButtonIcon'; 
-import { useNavigate, Link } from 'react-router-dom'; 
+import { getPosts, deletePost } from '../services/services';
+import ButtonIcon from '../components/ButtonIcon';
+import { useNavigate, Link } from 'react-router-dom';
 import { Create } from './Createpost';
-import IconCreate from '../components/IconCreate'; 
+import IconCreate from '../components/IconCreate';
+import { addLike, removeLike } from '../api/likesApi';
+import { getLikesCount } from '../api/likesApi';
+
+const BASE_URL = "http://localhost:5000";
+
+function BlogPost({ post }) {
+  return (
+    <div>
+      <h2>{post.name}</h2>
+      <p>{post.kindOfPost}</p>
+      <p>{post.description}</p>
+      <img src={`${BASE_URL}${post.image}`} alt={post.name} />
+    </div>
+  );
+}
 
 const Blog = () => {
+  // Inicializamos el estado para la búsqueda, artículos, visibilidad del componente de creación y likes
   const [search, setSearch] = useState('');
   const [articles, setArticles] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
-  const navigate = useNavigate(); 
+  const [likes, setLikes] = useState({});
+  const [likesCount, setLikesCount] = useState({});
+  const navigate = useNavigate();
+  
+
+  // Obtenemos rol y token del usuario desde localStorage
+  const role = localStorage.getItem('role');
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const posts = await getPosts(); 
+        const posts = await getPosts();
         setArticles(posts);
+
+        // Cargar el conteo de likes para cada post
+        const likesCountPromises = posts.map(post => getLikesCount(post.id)); 
+        const likesCounts = await Promise.all(likesCountPromises);
+        
+        // Establecemos los likes en el estado
+        const initialLikes = {};
+        likesCounts.forEach((count, index) => {
+          initialLikes[posts[index].id] = count.count;
+        });
+        setLikes(initialLikes);
       } catch (error) {
         console.error('Error al obtener los artículos:', error);
       }
     };
 
-    fetchPosts();
+    fetchPosts(); 
   }, []);
 
   const handleDelete = async (id) => {
+    // Confirmamos la eliminación del post
     const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este post?");
     if (confirmDelete) {
       try {
-        await deletePost(id);
-        // Refresca la lista de artículos después de eliminar
-        setArticles(articles.filter(article => article.id !== id));
+        await deletePost(id); 
+        setArticles(articles.filter(article => article.id !== id)); 
       } catch (error) {
         console.error("Error al eliminar el post:", error);
       }
@@ -39,13 +72,40 @@ const Blog = () => {
   };
 
   const handleNewPost = (newPost) => {
-    // Agregar el nuevo post a la lista de artículos
-    setArticles(prevArticles => [...prevArticles, newPost]);
+    // Actualizamos la lista de artículos al agregar uno nuevo
+    setArticles(prevArticles => [newPost, ...prevArticles]);
   };
 
+  // Función para manejar el clic en el icono de like
+  const handleLike = async (postId) => {
+    try {
+      // Verificar si el usuario ya ha dado like
+      const hasLiked = likesCount[postId] > 0;
+  
+      // Si ya ha dado like, eliminar el like
+      if (hasLiked) {
+        await removeLike(postId);
+        setLikesCount(prev => ({
+          ...prev,
+          [postId]: prev[postId] - 1, // Decrementar el conteo de likes
+        }));
+      } else {
+        // Si no ha dado like, agregar un nuevo like
+        await addLike(postId);
+        setLikesCount(prev => ({
+          ...prev,
+          [postId]: (prev[postId] || 0) + 1, // Incrementar el conteo de likes
+        }));
+      }
+    } catch (error) {
+      console.error('Error al manejar el like:', error);
+    }
+  };
+
+  // Filtramos los artículos según el término de búsqueda
   const filteredArticles = articles.filter(article =>
-    article.name.toLowerCase().includes(search.toLowerCase()) ||
-    article.description.toLowerCase().includes(search.toLowerCase())
+    (article.name && article.name.toLowerCase().includes(search.toLowerCase())) ||
+    (article.description && article.description.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -74,21 +134,42 @@ const Blog = () => {
                 src={article.image}
                 alt={article.name}
                 className="w-full h-48 object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'ruta_a_imagen_por_defecto'; 
+                }}
               />
               <div className="p-6">
                 <h3 className="text-xl font-bold text-green-600 mb-2">{article.name}</h3>
                 <p className="text-gray-700 mb-4">{article.description}</p>
-                <div className="flex justify-between">
-                  <ButtonIcon
-                    icon="fas fa-edit" 
-                    onClick={() => navigate(`/editar/${article.id}`)} 
-                    title="Editar"
-                  />
-                  <ButtonIcon
-                    icon="fas fa-trash" 
-                    onClick={() => handleDelete(article.id)}
-                    title="Eliminar"
-                  />
+                <div className="flex justify-between items-center">
+                  {/* Icono de Editar visible solo para admin logueado */}
+                  {role === 'admin' && token && (
+                    <ButtonIcon
+                      icon="fas fa-edit"
+                      onClick={() => navigate(`/editar/${article.id}`)}
+                      title="Editar"
+                    />
+                  )}
+                  {/* Icono de Eliminar visible solo para admin logueado */}
+                  {role === 'admin' && token && (
+                    <ButtonIcon
+                      icon="fas fa-trash"
+                      onClick={() => handleDelete(article.id)}
+                      title="Eliminar"
+                    />
+                  )}
+                  {/* Icono de corazón visible para usuarios logueados */}
+                  {token && (
+                    <div className="flex items-center">
+                    <ButtonIcon
+                      icon={likes[article.id] ? "fas fa-heart text-red-500" : "far fa-heart"}
+                      onClick={() => handleLike(article.id)}
+                      title="Dar like"
+                    />
+                    <span className="ml-2">{likes[article.id] || 0}</span>
+                    </div>
+                  )}
                 </div>
                 <Link
                   to={`/post/${article.id}`}
@@ -101,22 +182,35 @@ const Blog = () => {
           ))}
         </div>
 
-        {/* Componente Create para crear un nuevo post */}
-        {showCreate && (
+        {/* Componente de creación de nuevo post, visible solo para admin logueado */}
+        {showCreate && role === 'admin' && token && (
           <Create
             onCancel={() => setShowCreate(false)}
-            onSubmit={handleNewPost} 
+            onSubmit={handleNewPost}
           />
         )}
 
-        {/* Componente IconCreate para el botón de nuevo post */}
-        <IconCreate onClick={() => setShowCreate(true)} />
+        {/* Ícono de crear nuevo post visible solo para admin logueado */}
+        {role === 'admin' && token && (
+          <IconCreate onClick={() => setShowCreate(true)} />
+        )}
       </section>
     </div>
   );
 };
 
 export default Blog;
+
+
+
+
+
+
+
+
+
+
+
 
 
 

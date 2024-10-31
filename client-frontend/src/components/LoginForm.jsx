@@ -3,31 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { logoImg } from '../utils';
 
 const LoginForm = () => {
-    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     
     const navigate = useNavigate();
 
-    // ========================================
-    // Manejo del envío del formulario de login
-    // ========================================
+    // Handling of the login form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // =======================================
-        // Validación de los campos del formulario
-        // =======================================
+    
         if (!email || !password) {
             setError('Por favor, completa todos los campos.');
             return;
         }
-
+    
         try {
-            // ======================================================
-            // Envío de solicitud POST al servidor para autenticación
-            // ======================================================
             const response = await fetch('http://localhost:5000/api/auth/acceso', {
                 method: 'POST',
                 headers: {
@@ -35,29 +26,28 @@ const LoginForm = () => {
                 },
                 body: JSON.stringify({ email, password }),
             });
-
-            // ==============================================
-            // Manejo de errores en la respuesta del servidor
-            // ==============================================
+    
+            // Check if the response was successful
             if (!response.ok) {
-                throw new Error('Error al iniciar sesión');
+                const errorData = await response.json();
+                console.log('Error de respuesta del servidor:', errorData);
+                throw new Error(errorData.message || 'Error al iniciar sesión');
             }
-
-            // =====================================================================
-            // Procesamiento de la respuesta, almacenamiento del token y redirección
-            // =====================================================================
+            console.log('Respuesta de la API:', response.data);
+            // Processes the response in case of success
             const data = await response.json();
+            console.log('Nombre recibido de la API:', data.name);
             if (data.token) {
+                // Stores token, role and user name in localStorage
                 localStorage.setItem('token', data.token);
-                console.log('Token guardado en localStorage:', localStorage.getItem('token'));
-                navigate('/profile');
+                localStorage.setItem('role', data.role);
+                localStorage.setItem('name', data.name); 
+                
+                navigate('/blog');
             } else {
                 setError('Correo electrónico o contraseña incorrectos.');
             }
         } catch (error) {
-            // =================================================
-            // Manejo de errores de red o respuesta del servidor
-            // =================================================
             console.error('Error:', error);
             setError('No se recibió respuesta del servidor.');
         }
@@ -100,10 +90,6 @@ const LoginForm = () => {
                     Iniciar Sesión
                 </button>
             </form>
-
-            {/* ===============================================================
-                Enlace para redirigir a la página de recuperación de contraseña
-            ===================================================================  */}
             <p className="mt-4 text-center">
                 <span className="text-gray-600">¿Has olvidado tu contraseña?</span>{' '}
                 <button
@@ -118,6 +104,9 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
+
+
 
 
 
