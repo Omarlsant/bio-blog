@@ -10,3 +10,12 @@ test('renders AboutUs component without crashing', () => {
   expect(screen.getByText(/Alimentación Consciente para un Futuro Sostenible/i)).toBeInTheDocument();
   expect(screen.getByText(/Nuestra Historia y Misión/i)).toBeInTheDocument();
 });
+
+test('renders team member images with alt text', () => {
+  render(<AboutUs />);
+  const omarImage = screen.getByAltText('Omar');
+  const marielaImage = screen.getByAltText('Mariela');
+  expect(omarImage).toBeInTheDocument();
+  expect(marielaImage).toBeInTheDocument();
+});
+
