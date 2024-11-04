@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AboutUs from '../pages/AboutUs.jsx';
+import Carousel from '../components/Carousel';
 
 test('renders AboutUs component without crashing', () => {
   render(
