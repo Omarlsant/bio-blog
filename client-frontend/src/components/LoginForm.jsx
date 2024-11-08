@@ -1,41 +1,63 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { logoImg } from '../utils';
-import useStore from '../store/store';
-import axios from 'axios';
+import { logoImg } from '../utils';
 
 const LoginForm = () => {
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const setToken = useStore((state) => state.setToken);
-    const setRole = useStore((state) => state.setRole);
-    const setUsername = useStore((state) => state.setUsername);
+    
     const navigate = useNavigate();
 
+    // ========================================
+    // Manejo del envío del formulario de login
+    // ========================================
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // =======================================
+        // Validación de los campos del formulario
+        // =======================================
         if (!email || !password) {
             setError('Por favor, completa todos los campos.');
             return;
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/acceso', { email, password });
-            const { token, role, name } = response.data;
+            // ======================================================
+            // Envío de solicitud POST al servidor para autenticación
+            // ======================================================
+            const response = await fetch('http://localhost:5000/api/auth/acceso', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-            if (token) {
-                // Almacena el token y otros datos Zustand
-                setToken(token);
-                setRole(role);
-                setUsername(name);
+            // ==============================================
+            // Manejo de errores en la respuesta del servidor
+            // ==============================================
+            if (!response.ok) {
+                throw new Error('Error al iniciar sesión');
+            }
 
-                navigate('/blog');
+            // =====================================================================
+            // Procesamiento de la respuesta, almacenamiento del token y redirección
+            // =====================================================================
+            const data = await response.json();
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+                console.log('Token guardado en localStorage:', localStorage.getItem('token'));
+                navigate('/profile');
             } else {
                 setError('Correo electrónico o contraseña incorrectos.');
             }
         } catch (error) {
+            // =================================================
+            // Manejo de errores de red o respuesta del servidor
+            // =================================================
             console.error('Error:', error);
             setError('No se recibió respuesta del servidor.');
         }
@@ -43,11 +65,11 @@ const LoginForm = () => {
 
     return (
         <section className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-            {/* <div className="text-center mb-6">
+            <div className="text-center mb-6">
                 <img src={logoImg} alt="Logo" className="mx-auto w-24 h-24 mb-4" />
                 <h2 className="text-2xl font-semibold text-green-600">Iniciar Sesión</h2>
                 <p className="text-gray-500">Accede a tu cuenta para continuar.</p>
-            </div> */}
+            </div>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="form-group">
                     <label className="block text-gray-700" htmlFor="email">Correo Electrónico</label>
@@ -78,6 +100,10 @@ const LoginForm = () => {
                     Iniciar Sesión
                 </button>
             </form>
+
+            {/* ===============================================================
+                Enlace para redirigir a la página de recuperación de contraseña
+            ===================================================================  */}
             <p className="mt-4 text-center">
                 <span className="text-gray-600">¿Has olvidado tu contraseña?</span>{' '}
                 <button
@@ -87,18 +113,11 @@ const LoginForm = () => {
                     Recuperar contraseña
                 </button>
             </p>
-
         </section>
     );
 };
 
 export default LoginForm;
-
-
-
-
-
-
 
 
 

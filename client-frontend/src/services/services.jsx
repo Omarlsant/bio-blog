@@ -1,74 +1,76 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/posts';
-const BASE_IMAGE_URL = 'http://localhost:5000/uploads/';
+const API_URL = '';
 
-const handleError = (error, action) => {
-  console.error(`Error al ${action}:`, error.response ? error.response.data : error.message);
-  throw error;
-};
-
-//==================
-// Create a new Post
-//==================
-export const createPost = async (formData) => {
+// ===========================
+// Crear un nuevo Post
+// ===========================
+export const createPost = async (newPost) => {
   try {
-    const response = await axios.post(API_URL, formData);
-    response.data.image = `${BASE_IMAGE_URL}${response.data.image}`;
-    return response.data; 
+    const response = await axios.post(API_URL, newPost, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response;
   } catch (error) {
-    handleError(error, "crear Post");
+    console.error("Error al crear Post:", error);
+    throw error;
   }
 };
 
-//==============
-// Get all posts
-//==============
+// =====================
+// Traer todos los Posts
+// =====================
 export const getPosts = async () => {
   try {
     const response = await axios.get(API_URL);
     return response.data;
   } catch (error) {
-    handleError(error, "obtener Posts");
+    console.error("Error al obtener Posts:", error);
+    throw error;
   }
 };
 
-//=============
-// Get one post
-//=============
+// ====================
+// Traer un solo Post
+// ====================
 export const getOnePost = async (id) => {
   try {
     const response = await axios.get(`${API_URL}/${id}`);
     return response.data;
   } catch (error) {
-    handleError(error, "obtener el Post");
+    console.error("Error al obtener el Post:", error);
+    throw error;
   }
 };
 
-//================
-// Update one post
-//================
-export const updatePost = async (id, postData) => {
+// ==================
+// Actualizar un Post
+// ==================
+export const updatePost = async (id, updatedPost) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, postData);
-    return response.data;
+    const response = await axios.put(`${API_URL}/${id}`, updatedPost, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response;
   } catch (error) {
-    handleError(error, "actualizar Post");
+    console.error("Error al actualizar Post:", error);
+    throw error;
   }
 };
 
-//================
-// Delete one post
-//================
+// ================
+// Eliminar un Post
+// ================
 export const deletePost = async (id) => {
   try {
     const response = await axios.delete(`${API_URL}/${id}`);
     return response;
   } catch (error) {
-    handleError(error, "eliminar Post");
+    console.error("Error al eliminar Post:", error);
+    throw error;
   }
 };
-
-
-
-

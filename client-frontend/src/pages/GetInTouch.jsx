@@ -1,17 +1,12 @@
-import React, { useState } from "react";
-import ContactForm from "../components/ContactForm"; // Ajusta la ruta según tu estructura de carpetas
+import React from 'react'
 
 const GetInTouch = () => {
-  const [submittedMessages, setSubmittedMessages] = useState([]);
-
   return (
     <div>
-      <ContactForm
-        submittedMessages={submittedMessages}
-        setSubmittedMessages={setSubmittedMessages}
-      />
+        <h1>Nuestro formulario</h1>
+      
     </div>
-  );
-};
+  )
+}
 
 export default GetInTouch;

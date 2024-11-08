@@ -22,10 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
 *.mp4
+<<<<<<< HEAD
 client-frontend/src/assets/home-video/
-
-
-# Environment variables
-.env
+=======
+>>>>>>> a3c9121e9c57d538649941f8ed8ecbf624aa2f06

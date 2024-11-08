@@ -8,13 +8,6 @@ import Register from "../pages/Register.jsx";
 import Login from "../pages/Login.jsx";
 import RecoverPassword from "../pages/RecoverPassword.jsx";
 import { Navigate } from 'react-router-dom';
-import UnderConstruction from "../pages/UnderConstruction.jsx";
-import EditPost from "../pages/EditPost.jsx"; 
-import PostDetail from "../pages/PostDetail.jsx"; 
-import Profile from "../pages/Profile.jsx";
-import AdminPage from "../pages/AdminPage.jsx"; 
-
-const userEmail = 'proyectoBioBlog@gmail.com';
 
 export const router = createBrowserRouter([
     {
@@ -29,9 +22,9 @@ export const router = createBrowserRouter([
                 element: <Home />,
             },
             {
-                path: "nosotros",
-                element: <AboutUs />,
-            },
+				path: "nosotros",
+				element: <AboutUs />,
+			},
             {
                 path: "blog",
                 element: <Blog />,
@@ -49,31 +42,9 @@ export const router = createBrowserRouter([
                 element: <Login />,
             },
             {
-                path: "construccion",
-                element: <UnderConstruction />,
-            },
-            {
                 path: "recuperar-password",
                 element: <RecoverPassword />,
-            },
-            {
-                path: "editar/:id", 
-                element: <EditPost />, 
-            },
-            {
-                path: "post/:id", 
-                element: <PostDetail />, 
-            },
-            {
-                path: "perfil", 
-                element: <Profile />, 
-            },
-            {
-                path: "admin",
-                element: userEmail === 'proyectoBioBlog@gmail.com' ? <AdminPage /> : <Navigate to="/" />
-            },
+              }
         ]
     }
 ]);
-
-

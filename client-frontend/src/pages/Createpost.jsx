@@ -1,113 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { createPost, updatePost } from '../services/services';
+import React, { useState } from 'react';
+import { createPost } from '../services/services'; 
 import { logoImg } from '../utils';
-import { useNavigate } from 'react-router-dom';
 
-
-export const Create = ({ post, onSubmit, onCancel }) => {
-
+export const Create = ({ onCancel }) => { 
     const [image, setImage] = useState(null);
     const [title, setTitle] = useState("");
     const [kindOfPost, setKindOfPost] = useState("");
     const [description, setDescription] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
-
-
-    useEffect(() => {
-        if (post) {
-            setTitle(post.name || "");
-            setKindOfPost(post.kindOfPost || "");
-            setDescription(post.description || "");
-
-            setImage(null);
-        }
-    }, [post]);
-
 
     const handleImageChange = (event) => {
-        const selectedImage = event.target.files[0];
+        const selectedImage = event.target.files[0]; 
         if (!selectedImage) {
             alert("Debes seleccionar una imagen.");
             return;
         }
-        
         setImage(selectedImage);
     };
 
     const handleSubmit = async (event) => {
-        event.preventDefault();
+        event.preventDefault(); 
 
-        const formData = new FormData();
-        formData.append('name', title);
-        formData.append('kindOfPost', kindOfPost);
-        formData.append('description', description);
-
-        if (image) {
-            formData.append('image', image);
+        if (!title || !kindOfPost || !description) {
+            alert("Por favor, completa todos los campos.");
+            return;
         }
+
+        const newPost = {
+            name: title,
+            kindOfPost: kindOfPost,
+            description: description,
+            image: image ? image.name : null 
+        };
 
         try {
-            let newPost;
-            if (post) {
-                await updatePost(post.id, formData);
-                alert('Post actualizado exitosamente');
-                newPost = { ...post, ...{ name: title, kindOfPost, description, image: image ? image.name : post.image } };
+            const respuesta = await createPost(newPost);
+            if (respuesta.ok) {
+                alert('Post guardado exitosamente');
+                onCancel();
             } else {
-                newPost = await createPost(formData);
-                alert('Post creado exitosamente');
+                alert('Hubo un error al guardar el Post');
             }
-
-            console.log('Nuevo Post:', newPost);
-            onSubmit(newPost);
-            onCancel();
         } catch (error) {
-            console.error("Error al procesar el Post:", error);
-            setError('Hubo un error al procesar el Post: ' + error.message);
+            console.error("Error al guardar el Post", error);
         }
     };
-
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md m-5 relative z-10">
+                {/* Encabezado con Logo */}
                 <div className="flex justify-center mb-4">
-                    <img
-                        src={logoImg}
-                        alt="Logo"
+                    <img 
+                        src={logoImg} 
+                        alt="Logo" 
                         className="h-16 w-auto"
                     />
                 </div>
-                <h3 className="text-center text-2xl font-bold text-gray-800 mb-6">
-                    {post ? 'Editar Post' : 'Nuevo Post'}
-                </h3>
-                {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+                <h3 className="text-center text-2xl font-bold text-gray-800 mb-6">Nuevo Post</h3>
                 <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
-                    <input
-                        type="text"
-                        id="title"
-                        placeholder="Nombre"
+                    <input 
+                        type="text" 
+                        id="title"  
+                        placeholder="Nombre" 
                         value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={(e) => setTitle(e.target.value)} 
                         className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 text-lg focus:border-green-500 focus:outline-none"
-                        required
                     />
-                    <input
-                        type="text"
-                        id="kindOfPost"
-                        placeholder="Tipo de Post: receta, entrevista, etc"
+                    <input 
+                        type="text" 
+                        id="kindOfPost" 
+                        placeholder="Tipo de Post: receta, entrevista, etc" 
                         value={kindOfPost}
-                        onChange={(e) => setKindOfPost(e.target.value)}
+                        onChange={(e) => setKindOfPost(e.target.value)} 
                         className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 text-lg focus:border-green-500 focus:outline-none"
-                        required
                     />
-                    <textarea
-                        id="description"
+                    <textarea 
+                        id="description" 
                         placeholder="Descripción"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 text-lg focus:border-green-500 focus:outline-none h-24 resize-none"
-                        required
                     ></textarea>
 
                     <input
@@ -126,15 +98,15 @@ export const Create = ({ post, onSubmit, onCancel }) => {
                         </div>
                     )}
 
-                    <input
-                        type="submit"
-                        id="save"
-                        value={post ? "Actualizar" : "Crear"}
+                    <input 
+                        type="submit" 
+                        id="save" 
+                        value="Guardar" 
                         className="w-full p-3 text-lg font-bold bg-green-500 text-white rounded-md cursor-pointer hover:bg-green-600 transition-colors"
                     />
-                    <button
-                        type="button"
-                        onClick={onCancel}
+                    <button 
+                        type="button" 
+                        onClick={onCancel} 
                         className="w-full p-3 text-lg font-bold bg-red-500 text-white rounded-md cursor-pointer hover:bg-red-600 transition-colors"
                     >
                         Cancelar
@@ -144,9 +116,6 @@ export const Create = ({ post, onSubmit, onCancel }) => {
         </div>
     );
 };
-
-
-
 
 
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import AuthForm from '../components/AuthForm';
+import LoginForm from '../components/LoginForm';
 
 const Login = () => {
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center">
-      <AuthForm />
+      <LoginForm />
     </div>
   );
 };
