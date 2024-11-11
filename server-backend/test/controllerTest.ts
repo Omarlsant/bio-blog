@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { app, server } from '../app';
-import catMeme from '../models/catModel';
-import { CatMeme } from '../Interfaces/catInterfaces';
+
 
 //Test Get
 
