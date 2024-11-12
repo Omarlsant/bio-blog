@@ -8,6 +8,7 @@ client-frontend/src/blog-content
 *.webp
 .vite
 .vscode
+node_modules
 
 #Logs
 logs
