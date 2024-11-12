@@ -29,10 +29,14 @@ app.use('/api/posts', postRoutes);
 app.use('/api/roles', roleRoutes); 
 app.use('/api/likes', likeRoutes);
 
+/* se nicia el servidor solo si el archivo se ejecuta directamente */
+if (require.main === module) {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+}
 
+export { app };
 
 
 
