@@ -2,19 +2,19 @@ import request from 'supertest';
 import { app } from '../app'; 
 import { db } from '../database/db';
 
-/* describe('Post Controller', () => {
+describe('Post Controller', () => {
   beforeAll(async () => {
     await db.query('DELETE FROM posts'); // para limpiar la tabla de posts
   });
 
   afterAll(async () => {
     await db.end(); // Cierra la conexión después de las pruebas
-  }); */
+  });
 
   //===========================
   // Prueba para crear un post
   //===========================
-/*  describe('POST /posts', () => {
+ describe('POST /posts', () => {
     it('should create a new post', async () => {
       const response = await request(app)
         .post('/posts')
@@ -34,7 +34,7 @@ import { db } from '../database/db';
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Todos los campos son obligatorios');
     });
-  });  */
+  });  
 
   //===========================
   // Prueba para obtener un post
@@ -114,4 +114,4 @@ import { db } from '../database/db';
       expect(Array.isArray(response.body)).toBe(true);
     });
   }); */
-/* }); */
+}); 

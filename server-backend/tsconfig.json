@@ -3,13 +3,11 @@
     "target": "ES6",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "../src",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx",
     "allowJs": true,
-  },
-  "include": ["src", "jest.config.ts"]
+  }
 }
