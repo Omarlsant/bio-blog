@@ -14,22 +14,26 @@ const LoginForm = ({ inputTextColor, formBackground }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (!email || !password) {
             setError('Por favor, completa todos los campos.');
             return;
         }
-
+    
         try {
             const response = await axios.post('http://localhost:5000/api/auth/acceso', { email, password });
-            const { token, role, name } = response.data;
-
+            const { token, role, name, userId } = response.data; 
+    
             if (token) {
-                // Almacena el token y otros datos Zustand
+                // Almacena el token y otros datos en Zustand y localStorage
                 setToken(token);
                 setRole(role);
                 setUsername(name);
-
+                useStore.getState().setUserId(userId);
+    
+                // Guarda userId en localStorage
+                localStorage.setItem('userId', userId);
+    
                 navigate('/blog');
             } else {
                 setError('Correo electrónico o contraseña incorrectos.');

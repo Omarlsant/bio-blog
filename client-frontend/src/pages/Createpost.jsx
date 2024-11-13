@@ -3,86 +3,76 @@ import { createPost, updatePost } from '../services/services';
 import { logoImg } from '../utils';
 import { useNavigate } from 'react-router-dom';
 
-
 export const Create = ({ post, onSubmit, onCancel }) => {
+  const [image, setImage] = useState(null);
+  const [title, setTitle] = useState('');
+  const [kindOfPost, setKindOfPost] = useState('');
+  const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-    const [image, setImage] = useState(null);
-    const [title, setTitle] = useState("");
-    const [kindOfPost, setKindOfPost] = useState("");
-    const [description, setDescription] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+  useEffect(() => {
+    if (post) {
+      setTitle(post.name || '');
+      setKindOfPost(post.kindOfPost || '');
+      setDescription(post.description || '');
+      setImage(null);
+    }
+  }, [post]);
 
+  const handleImageChange = (event) => {
+    const selectedImage = event.target.files[0];
+    if (!selectedImage) {
+      alert('Debes seleccionar una imagen.');
+      return;
+    }
+    setImage(selectedImage);
+  };
 
-    useEffect(() => {
-        if (post) {
-            setTitle(post.name || "");
-            setKindOfPost(post.kindOfPost || "");
-            setDescription(post.description || "");
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('name', title);
+    formData.append('kindOfPost', kindOfPost);
+    formData.append('description', description);
 
-            setImage(null);
-        }
-    }, [post]);
+    if (image) {
+      formData.append('image', image);
+    }
 
+    try {
+      let newPost;
+      if (post) {
+        await updatePost(post.id, formData);
+        alert('Post actualizado exitosamente');
+        newPost = { ...post, ...{ name: title, kindOfPost, description, image: image ? image.name : post.image } };
+      } else {
+        const userId = localStorage.getItem('userId');
+        formData.append('userId', userId);
+        newPost = await createPost(formData);
+        alert('Post creado exitosamente');
+      }
 
-    const handleImageChange = (event) => {
-        const selectedImage = event.target.files[0];
-        if (!selectedImage) {
-            alert("Debes seleccionar una imagen.");
-            return;
-        }
-        
-        setImage(selectedImage);
-    };
+      console.log('Nuevo Post:', newPost);
+      onSubmit(newPost);
+      onCancel();
+    } catch (error) {
+      console.error('Error al procesar el Post:', error);
+      setError('Hubo un error al procesar el Post: ' + error.message);
+    }
+  };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData();
-        formData.append('name', title);
-        formData.append('kindOfPost', kindOfPost);
-        formData.append('description', description);
-
-        if (image) {
-            formData.append('image', image);
-        }
-
-        try {
-            let newPost;
-            if (post) {
-                await updatePost(post.id, formData);
-                alert('Post actualizado exitosamente');
-                newPost = { ...post, ...{ name: title, kindOfPost, description, image: image ? image.name : post.image } };
-            } else {
-                newPost = await createPost(formData);
-                alert('Post creado exitosamente');
-            }
-
-            console.log('Nuevo Post:', newPost);
-            onSubmit(newPost);
-            onCancel();
-        } catch (error) {
-            console.error("Error al procesar el Post:", error);
-            setError('Hubo un error al procesar el Post: ' + error.message);
-        }
-    };
-
-
-    return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md m-5 relative z-10">
-                <div className="flex justify-center mb-4">
-                    <img
-                        src={logoImg}
-                        alt="Logo"
-                        className="h-16 w-auto"
-                    />
-                </div>
-                <h3 className="text-center text-2xl font-bold text-green-600 mb-6">
-                    {post ? 'Editar Post' : 'Nuevo Post'}
-                </h3>
-                {error && <div className="text-red-500 text-center mb-4">{error}</div>}
-                <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md m-5 relative z-10">
+        <div className="flex justify-center mb-4">
+          <img src={logoImg} alt="Logo" className="h-16 w-auto" />
+        </div>
+        <h3 className="text-center text-2xl font-bold text-green-600 mb-6">
+          {post ? 'Editar Post' : 'Nuevo Post'}
+        </h3>
+        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
                     <input
                         type="text"
                         id="title"

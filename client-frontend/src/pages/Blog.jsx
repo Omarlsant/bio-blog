@@ -14,6 +14,7 @@ const Blog = () => {
   const navigate = useNavigate();
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('token');
+
   const fetchPosts = async () => {
     try {
       const posts = await getPosts();
@@ -31,39 +32,22 @@ const Blog = () => {
   };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const posts = await getPosts();
-        setArticles(posts);
-        const likesCountPromises = posts.map(post => getLikesCount(post.id));
-        const likesCounts = await Promise.all(likesCountPromises);
-        const initialLikes = {};
-        likesCounts.forEach((count, index) => {
-          initialLikes[posts[index].id] = count.count;
-        });
-        setLikes(initialLikes);
-      } catch (error) {
-        console.error('Error al obtener los artículos:', error);
-      }
-    };
-
     fetchPosts();
-  }, []);  
+  }, []);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este post?");
+    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este post?');
     if (confirmDelete) {
       try {
         await deletePost(id);
         setArticles(articles.filter(article => article.id !== id));
       } catch (error) {
-        console.error("Error al eliminar el post:", error);
+        console.error('Error al eliminar el post:', error);
       }
     }
   };
 
   const handleNewPost = async (newPost) => {
-    
     setArticles(prevArticles => [newPost, ...prevArticles]);
     await fetchPosts();
   };
@@ -74,7 +58,6 @@ const Blog = () => {
     try {
       const response = await toggleLike(trimmedPostId);
 
-      // Actualizar el estado de "likes" según la respuesta del backend
       setLikes(prev => ({
         ...prev,
         [trimmedPostId]: response.liked ? (prev[trimmedPostId] || 0) + 1 : prev[trimmedPostId] - 1,
@@ -83,7 +66,7 @@ const Blog = () => {
       console.error('Error al manejar el like:', error);
     }
   };
-  // Filtramos los artículos según el término de búsqueda
+
   const filteredArticles = articles.filter(article =>
     (article.name && article.name.toLowerCase().includes(search.toLowerCase())) ||
     (article.description && article.description.toLowerCase().includes(search.toLowerCase()))
@@ -123,8 +106,10 @@ const Blog = () => {
               <div className="p-6">
                 <h3 className="text-xl font-bold text-green-600 mb-2">{article.name}</h3>
                 <p className="text-gray-700 mb-4 line-clamp-4">{article.description}</p>
-                <div className="flex justify-between items-center">
-                  {/* Icono de Editar visible solo para admin logueado */}
+                {article.User && (
+                  <p className="text-sm text-gray-500">Publicado por: {article.User.name}</p>
+                )}
+                <div className="flex justify-between items-center mt-4">
                   {role === 'admin' && token && (
                     <ButtonIcon
                       icon="fas fa-edit"
@@ -132,7 +117,6 @@ const Blog = () => {
                       title="Editar"
                     />
                   )}
-                  {/* Icono de Eliminar visible solo para admin logueado */}
                   {role === 'admin' && token && (
                     <ButtonIcon
                       icon="fas fa-trash"
@@ -140,12 +124,11 @@ const Blog = () => {
                       title="Eliminar"
                     />
                   )}
-                  {/* Icono de corazón visible para usuarios logueados */}
                   {token && (
                     <div className="flex items-center">
                       <ButtonIcon
-                        icon={likes[article.id] ? "fas fa-heart text-red-500" : "far fa-heart"}
-                        onClick={() => handleLike(article.id)} 
+                        icon={likes[article.id] ? 'fas fa-heart text-red-500' : 'far fa-heart'}
+                        onClick={() => handleLike(article.id)}
                         title="Dar like"
                       />
                       <span className="ml-2">{likes[article.id] || 0}</span>
@@ -162,16 +145,12 @@ const Blog = () => {
             </div>
           ))}
         </div>
-
-        {/* Componente de creación de nuevo post, visible solo para admin logueado */}
         {showCreate && role === 'admin' && token && (
           <Create
             onCancel={() => setShowCreate(false)}
             onSubmit={handleNewPost}
           />
         )}
-
-        {/* Ícono de crear nuevo post visible solo para admin logueado */}
         {role === 'admin' && token && (
           <IconCreate onClick={() => setShowCreate(true)} />
         )}
@@ -181,6 +160,7 @@ const Blog = () => {
 };
 
 export default Blog;
+
 
 
 
