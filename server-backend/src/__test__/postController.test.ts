@@ -16,12 +16,10 @@ describe('Post Controller', () => {
   //===========================
  describe('POST /posts', () => {
     it('should create a new post', async () => {
-      const response = await request(app)
-        .post('/posts')
-        .send({
+      const response = await request(app).post('api/posts').send({
           name: 'Sample Post',
           kindOfPost: 'Blog',
-          description: 'This is a test description',
+          description: 'test description',
           image: 'http://localhost:5000/uploads/sample.jpg'
         });
       
@@ -30,7 +28,7 @@ describe('Post Controller', () => {
     });
 
     it('should return 400 if fields are missing', async () => {
-      const response = await request(app).post('/posts').send({});
+      const response = await request(app).post('api/posts').send({});
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Todos los campos son obligatorios');
     });
@@ -39,7 +37,7 @@ describe('Post Controller', () => {
   //===========================
   // Prueba para obtener un post
   //===========================
-  /* describe('GET /posts/:id', () => {
+ /*  describe('GET /posts/:id', () => {
     it('should get a post by ID', async () => {
       await db.query('INSERT INTO posts (id, name, kindOfPost, description, image) VALUES (?, ?, ?, ?, ?)', 
         ['1', 'Sample Post', 'Blog', 'Description', 'image.jpg']
@@ -55,8 +53,10 @@ describe('Post Controller', () => {
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Post no encontrado');
     });
+  }); */
+  
   });
- */
+
   //===============================
   // Prueba para actualizar un post
   //===============================
@@ -114,4 +114,3 @@ describe('Post Controller', () => {
       expect(Array.isArray(response.body)).toBe(true);
     });
   }); */
-}); 
