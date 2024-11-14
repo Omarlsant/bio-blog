@@ -20,10 +20,3 @@ router.get('/:postId/likes', async (req, res) => {
 });
 
 export default router;
-
-
-
-
-
-
-

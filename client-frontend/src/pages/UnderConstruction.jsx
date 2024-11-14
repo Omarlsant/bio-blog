@@ -48,9 +48,9 @@ const UnderConstruction = () => {
         {timerComponents.length ? timerComponents : <span>¡Ya casi estamos listos!</span>}
         <img src={construccionImg} alt="En construcción" className="mx-auto mb-8 w-full max-w-md mt-6" />
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <Link to="/home" className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300">Inicio</Link>
-          <Link to="/about" className="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300">Sobre Nosotros</Link>
-          <Link to="/contact" className="px-6 py-3 bg-yellow-600 text-white font-bold rounded-lg hover:bg-yellow-700 transition duration-300">Contacto</Link>
+          <Link to="/" className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300">Inicio</Link>
+          <Link to="/nosotros" className="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300">Sobre Nosotros</Link>
+          <Link to="/contacto" className="px-6 py-3 bg-yellow-600 text-white font-bold rounded-lg hover:bg-yellow-700 transition duration-300">Contacto</Link>
         </div>
         <div className="text-2xl font-semibold text-gray-800 mb-4">
           
