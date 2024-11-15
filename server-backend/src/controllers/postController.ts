@@ -1,23 +1,23 @@
 import { Request, Response } from 'express';
 import Post from '../models/postModel';
 import { v4 as uuidv4 } from 'uuid';
-console.log(uuidv4()); 
+import User from '../models/userModel'
 
 //=====================
 // Crear un nuevo post
 //=====================
 export const createPost = async (req: Request, res: Response) => {
-  const { name, kindOfPost, description } = req.body;
+  const { name, kindOfPost, description, userId } = req.body;
   const imagePath = req.file?.path ? req.file.path.replace(/\\/g, '/') : '';
   const imageName = imagePath.split('/').pop();
   const image = imageName ? `http://localhost:5000/uploads/${imageName}` : '';
 
-  if (!name || !kindOfPost || !description || !image) {
+  if (!name || !kindOfPost || !description || !image || !userId) {
     return res.status(400).json({ message: 'Todos los campos son obligatorios' });
   }
 
   try {
-    const newPost = await Post.create({ id: uuidv4(), name, kindOfPost, description, image });
+    const newPost = await Post.create({ id: uuidv4(), name, kindOfPost, description, image, userId });
     res.status(201).json({ message: 'Post creado con éxito', post: newPost });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear el post', error });
@@ -91,12 +91,18 @@ export const deletePost = async (req: Request, res: Response) => {
 //=========================
 export const getPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.findAll();
+    const posts = await Post.findAll({
+      include: {
+        model: User,
+        attributes: ['name'],
+      },
+    });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener posts', error });
   }
 };
+
 
 
 

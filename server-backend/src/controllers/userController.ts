@@ -81,6 +81,7 @@ export const loginUser = async (req: Request, res: Response) => {
             role: user.role,
             name: user.name,
             token: token,
+            userId: user.id,
         });
     } catch (error) {
         console.error('Error en el proceso de login:', error);
