@@ -31,7 +31,9 @@ export const getPostById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const post = await Post.findByPk(id);
+    const post = await Post.findByPk(id, {
+      include: [{ model: User, attributes: ['name'] }],
+    });
 
     if (!post) {
       return res.status(404).json({ message: 'Post no encontrado' });

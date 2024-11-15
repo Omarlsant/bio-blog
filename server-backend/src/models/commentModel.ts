@@ -37,21 +37,14 @@ Comment.init({
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
 }, {
   sequelize,
   modelName: 'Comment',
   tableName: 'comments',
-  timestamps: false,
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
-
-User.hasMany(Comment, { foreignKey: 'userId' });
-Post.hasMany(Comment, { foreignKey: 'postId' });
-Comment.belongsTo(User, { foreignKey: 'userId' });
-Comment.belongsTo(Post, { foreignKey: 'postId' });
 
 export default Comment;
 
