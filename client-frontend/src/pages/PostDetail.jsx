@@ -62,14 +62,15 @@ const PostDetail = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
-      <div
-        className="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl p-10 h-full"
-        ref={postRef}
-      >
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl p-10 h-full" ref={postRef}>
         <h1 className="text-4xl font-bold text-green-600 mb-6">{post.name}</h1>
         <img src={post.image} alt={post.name} className="w-full h-96 object-cover mb-6" />
         <p className="text-lg text-gray-700 leading-relaxed mb-6">{post.description}</p>
-        <p className="text-sm text-gray-500 mb-4">Publicado por: {post.User?.name || 'Usuario desconocido'}</p>
+        
+        {/* Mover la línea de "Publicado por" aquí */}
+        <p className="text-sm text-gray-500 mb-4">
+          Publicado por: {post.User?.name || 'Usuario desconocido'} el {new Date(post.created_at).toLocaleString()}
+        </p>
 
         <div className="mt-6 flex justify-between items-center">
           {role === 'admin' && token && (
@@ -97,7 +98,9 @@ const PostDetail = () => {
             {comments.map((comment) => (
               <div key={comment.id} className="p-4 border-b border-gray-200">
                 <p className="text-gray-600">{comment.content}</p>
-                <p className="text-sm text-gray-500">Comentado por: {comment.User?.name || 'Usuario desconocido'}</p>
+                <p className="text-sm text-gray-500">
+                  Comentado por: {comment.User?.name || 'Usuario desconocido'} el {new Date(comment.created_at).toLocaleString()}
+                </p>
               </div>
             ))}
           </div>
@@ -125,6 +128,7 @@ const PostDetail = () => {
 };
 
 export default PostDetail;
+
 
 
 

@@ -73,7 +73,7 @@ const Blog = () => {
   );
 
   return (
-    <div className=" min-h-screen mt-16">
+    <div className="min-h-screen mt-16">
       <header className="bg-green-600 text-white py-8">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl font-bold">Bienvenidos a Bio Blog</h1>
@@ -107,7 +107,9 @@ const Blog = () => {
                 <h3 className="text-xl font-bold text-green-600 mb-2">{article.name}</h3>
                 <p className="text-gray-700 mb-4 line-clamp-4">{article.description}</p>
                 {article.User && (
-                  <p className="text-sm text-gray-500">Publicado por: {article.User.name}</p>
+                  <p className="text-sm text-gray-500">
+                    Publicado por: {article.User.name} el {new Date(article.created_at).toLocaleString()}
+                  </p>
                 )}
                 <div className="flex justify-between items-center mt-4">
                   {role === 'admin' && token && (
