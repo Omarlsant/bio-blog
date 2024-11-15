@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getOnePost } from '../services/services';
-import { getComments, addComment } from '../services/commentServices';
+import { getComments } from '../services/commentServices';
 import ButtonIcon from '../components/ButtonIcon';
-import axios from 'axios';
 import CommentForm from '../components/CommentForm';
 import useStore from '../store/store';
 
@@ -15,7 +14,6 @@ const PostDetail = () => {
   const navigate = useNavigate();
   const postRef = useRef(null);
 
-  // Obtener el post
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -29,7 +27,6 @@ const PostDetail = () => {
     fetchPost();
   }, [id]);
 
-  // Obtener los comentarios del post
   useEffect(() => {
     if (!id) {
       console.error("Post ID no disponible");
@@ -38,9 +35,8 @@ const PostDetail = () => {
 
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/comments/${id}`);
-        setComments(response.data);
-        console.log('Comentarios obtenidos:', response.data);
+        const commentsData = await getComments(id);
+        setComments(commentsData);
       } catch (error) {
         console.error('Error obteniendo comentarios:', error);
       }
@@ -49,14 +45,11 @@ const PostDetail = () => {
     fetchComments();
   }, [id]);
 
-  // Manejar el envío de un nuevo comentario
   const handleCommentAdded = () => {
-
-    // Función para actualizar los comentarios cuando se agrega un nuevo comentario
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/comments/${id}`);
-        setComments(response.data);
+        const commentsData = await getComments(id);
+        setComments(commentsData);
       } catch (error) {
         console.error('Error obteniendo comentarios:', error);
       }
@@ -76,6 +69,7 @@ const PostDetail = () => {
         <h1 className="text-4xl font-bold text-green-600 mb-6">{post.name}</h1>
         <img src={post.image} alt={post.name} className="w-full h-96 object-cover mb-6" />
         <p className="text-lg text-gray-700 leading-relaxed mb-6">{post.description}</p>
+        <p className="text-sm text-gray-500 mb-4">Publicado por: {post.User?.name || 'Usuario desconocido'}</p>
 
         <div className="mt-6 flex justify-between items-center">
           {role === 'admin' && token && (
@@ -99,17 +93,15 @@ const PostDetail = () => {
           <h2 className="text-2xl font-bold text-gray-800">Comentarios</h2>
 
           <div className="mt-4 space-y-4">
-            {/* Mostrar comentarios */}
             {comments.length === 0 && <p>No hay comentarios aún.</p>}
             {comments.map((comment) => (
               <div key={comment.id} className="p-4 border-b border-gray-200">
                 <p className="text-gray-600">{comment.content}</p>
-                <p className="text-sm text-gray-500">- {comment.username}</p>
+                <p className="text-sm text-gray-500">Comentado por: {comment.User?.name || 'Usuario desconocido'}</p>
               </div>
             ))}
           </div>
 
-          {/* Formulario para agregar un comentario */}
           {token && (
             <CommentForm
               postId={id}
@@ -133,6 +125,7 @@ const PostDetail = () => {
 };
 
 export default PostDetail;
+
 
 
 
