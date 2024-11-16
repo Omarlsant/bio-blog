@@ -7,13 +7,14 @@ import GetInTouch from "../pages/GetInTouch.jsx";
 import Register from "../pages/Register.jsx";
 import Login from "../pages/Login.jsx";
 import RecoverPassword from "../pages/RecoverPassword.jsx";
+import ResetPassword from "../pages/ResetPassword.jsx";
 import { Navigate } from 'react-router-dom';
 import UnderConstruction from "../pages/UnderConstruction.jsx";
 import EditPost from "../pages/EditPost.jsx"; 
 import PostDetail from "../pages/PostDetail.jsx"; 
 import Profile from "../pages/Profile.jsx";
 import AdminPage from "../pages/AdminPage.jsx"; 
-import ProtectedRoute from "../components/ProtectedRoute.jsx"; // Importa el componente de ruta protegida
+import ProtectedRoute from "../components/ProtectedRoute.jsx";
 
 const userEmail = 'proyectoBioBlog@gmail.com';
 
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
             {
                 path: "recuperar-password",
                 element: <RecoverPassword />,
+            },
+            {
+                path: "reset-password/:token",
+                element: <ResetPassword />,
             },
             {
                 path: "editar/:id", 

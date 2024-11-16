@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import emailjs from 'emailjs-com';
+import axios from 'axios';
 
 const RecoverPassword = () => {
     const [email, setEmail] = useState('');
@@ -14,14 +15,38 @@ const RecoverPassword = () => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/recover-password', {
+            // Solicita el token de recuperación al backend
+            const response = await axios.post('http://localhost:5000/api/auth/recuperar-password', {
                 email,
             });
-            setMessage(response.data.message);
-            setEmail('');
+            const { token } = response.data;
+
+            // Configura los parámetros para EmailJS
+            const templateParams = {
+                user_email: email,
+                recovery_link: `http://localhost:5173/reset-password/${token}`,
+            };
+
+            // Envía el correo usando EmailJS
+            emailjs.send(
+                'service_nxdu9xm',
+                'template_xg2mniu',     // Reemplaza con tu TEMPLATE ID
+                templateParams,
+                'QAlZWdUKRwGUt9dya'          // Reemplaza con tu USER ID
+            ).then(
+                () => {
+                    console.log('Correo enviado con éxito:', response);
+                    setMessage('Correo de recuperación enviado.');
+                    setEmail('');
+                },
+                (error) => {
+                    console.error('Error al enviar el correo:', error);
+                    setError('Error al enviar el correo de recuperación.');
+                }
+            );
         } catch (err) {
             if (err.response) {
-                setError(err.response.data.message || 'Error al enviar la solicitud de recuperación');
+                setError(err.response.data.message || 'Error al generar el token de recuperación');
             } else {
                 setError('Error en la solicitud: ' + err.message);
             }
@@ -50,17 +75,9 @@ const RecoverPassword = () => {
             </form>
             {message && <p className="text-green-500 text-center mt-4">{message}</p>}
             {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-            <p className="mt-4 text-center">
-                <span className="text-gray-600">¿Ya tienes tu contraseña?</span>{' '}
-                <button
-                    onClick={() => navigate('/acceso')}
-                    className="text-green-600 hover:underline focus:outline-none"
-                >
-                   
-                </button>
-            </p>
         </section>
     );
 };
 
 export default RecoverPassword;
+

@@ -12,6 +12,8 @@ import path from 'path';
 // Importamos los modelos para que se carguen y se definan las asociaciones
 import User from './models/userModel';
 import Post from './models/postModel';
+import recoverPassRoutes from './routes/recoverPassRoutes';
+import resetPassRoutes from './routes/resetPassRoutes';
 import Comment from './models/commentModel';
 import Like from './models/likeModel';
 
@@ -39,7 +41,8 @@ app.use('/api/posts', postRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/comments', commentRoutes);
-
+app.use('/api/auth', recoverPassRoutes);
+app.use('/api/auth', resetPassRoutes);
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
