@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
+import { toast } from 'react-toastify';
 
 const RegisterForm = ({ inputTextColor, formBackground }) => {
     const [name, setName] = useState('');
@@ -29,6 +30,13 @@ const RegisterForm = ({ inputTextColor, formBackground }) => {
             setToken(token);
             setRole(role);
             setUsername(name);
+
+            // Mostrar el toast de bienvenida
+            toast.success(`Usuario registrado con éxito. Bienvenido a Bio-Blog, ${name}!`, {
+                className: 'bg-green-600 text-white p-4 rounded-lg shadow-lg',
+                position: 'top-center',
+                autoClose: 3000,
+            });
 
             setTimeout(() => {
                 navigate('/blog');

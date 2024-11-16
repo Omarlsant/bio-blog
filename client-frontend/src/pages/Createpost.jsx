@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPost, updatePost } from '../services/services';
 import { logoImg } from '../utils';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const Create = ({ post, onSubmit, onCancel }) => {
   const [image, setImage] = useState(null);
@@ -44,13 +45,13 @@ export const Create = ({ post, onSubmit, onCancel }) => {
       let newPost;
       if (post) {
         await updatePost(post.id, formData);
-        alert('Post actualizado exitosamente');
+        toast.success('Post actualizado exitosamente');
         newPost = { ...post, ...{ name: title, kindOfPost, description, image: image ? image.name : post.image } };
       } else {
         const userId = localStorage.getItem('userId');
         formData.append('userId', userId);
         newPost = await createPost(formData);
-        alert('Post creado exitosamente');
+        toast.success('Post creado exitosamente');
       }
 
       console.log('Nuevo Post:', newPost);

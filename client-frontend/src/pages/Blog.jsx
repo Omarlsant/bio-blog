@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Create } from './Createpost';
 import IconCreate from '../components/IconCreate';
 import { getLikesCount, toggleLike } from '../services/likeServices';
+import { toast } from 'react-toastify';
 
 const Blog = () => {
   const [search, setSearch] = useState('');
@@ -35,17 +36,61 @@ const Blog = () => {
     fetchPosts();
   }, []);
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este post?');
-    if (confirmDelete) {
-      try {
-        await deletePost(id);
-        setArticles(articles.filter(article => article.id !== id));
-      } catch (error) {
-        console.error('Error al eliminar el post:', error);
+  // Función para mostrar un toast de confirmación con un diseño elegante
+const showConfirmationToast = (onConfirm) => {
+  toast(
+      ({ closeToast }) => (
+          <div className="flex flex-col items-center space-y-4 p-4 bg-green-50 border border-green-400 rounded-lg shadow-lg">
+              <p className="text-green-700 font-semibold text-lg">¿Estás seguro de que deseas eliminar este post?</p>
+              <div className="flex space-x-4">
+                  <button
+                      onClick={() => {
+                          onConfirm();
+                          closeToast();
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition duration-200"
+                  >
+                      Sí, eliminar
+                  </button>
+                  <button
+                      onClick={closeToast}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg shadow transition duration-200"
+                  >
+                      Cancelar
+                  </button>
+              </div>
+          </div>
+      ),
+      {
+          position: 'top-center',
+          autoClose: false,
+          closeOnClick: false,
+          draggable: false,
+          closeButton: false,
+          className: 'w-full max-w-md',
       }
-    }
-  };
+  );
+};
+
+// Implementación en el handleDelete
+const handleDelete = async (id) => {
+  showConfirmationToast(async () => {
+      try {
+          await deletePost(id);
+          setArticles(articles.filter(article => article.id !== id));
+          toast.success('Post eliminado exitosamente', {
+              className: 'bg-green-600 text-white font-semibold p-3 rounded-lg shadow-lg',
+              icon: '🗑️',
+          });
+      } catch (error) {
+          console.error('Error al eliminar el post:', error);
+          toast.error('Error al eliminar el post', {
+              className: 'bg-red-600 text-white font-semibold p-3 rounded-lg shadow-lg',
+              icon: '⚠️',
+          });
+      }
+  });
+};
 
   const handleNewPost = async (newPost) => {
     setArticles(prevArticles => [newPost, ...prevArticles]);

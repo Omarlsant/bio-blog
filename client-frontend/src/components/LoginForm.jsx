@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const LoginForm = ({ inputTextColor, formBackground }) => {
     const [email, setEmail] = useState('');
@@ -33,6 +34,8 @@ const LoginForm = ({ inputTextColor, formBackground }) => {
     
                 // Guarda userId en localStorage
                 localStorage.setItem('userId', userId);
+
+                toast.success(`Bienvenido a Bio-Blog, ${name}!`);
     
                 navigate('/blog');
             } else {
@@ -41,6 +44,7 @@ const LoginForm = ({ inputTextColor, formBackground }) => {
         } catch (error) {
             console.error('Error:', error);
             setError('No se recibió respuesta del servidor.');
+            toast.error('Error al iniciar sesión.');
         }
     };
 
