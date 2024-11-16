@@ -34,8 +34,6 @@ const LoginForm = ({ inputTextColor, formBackground }) => {
     
                 // Guarda userId en localStorage
                 localStorage.setItem('userId', userId);
-
-                toast.success(`Bienvenido a Bio-Blog, ${name}!`);
     
                 navigate('/blog');
             } else {

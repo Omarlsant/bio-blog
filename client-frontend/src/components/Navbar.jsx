@@ -3,7 +3,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { logoImg } from "../utils";
 import useStore from "../store/store";
 import { FaBars, FaTimes, FaUserPlus, FaSignOutAlt } from "react-icons/fa";
-import { toast } from 'react-toastify';
 
 const Navbar = ({ onSearch }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +28,7 @@ const Navbar = ({ onSearch }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
 
-    toast.info('Sesión cerrada. Hasta pronto');
+    
     navigate("/");
   };
 
